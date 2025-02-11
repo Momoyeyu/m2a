@@ -1,0 +1,17 @@
+# python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# experiment outputs
+/logs/
+/results/
+/AEs/*.wav
+
+# model checkpoints / datasets (not distributed)
+sed-crnn/models/
+ATST-SED/src/*.ckpt
+*.pth
+/TUT-sound-events-2017-development/
+/DESED_dataset/

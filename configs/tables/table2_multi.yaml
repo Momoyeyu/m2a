@@ -1,0 +1,49 @@
+# =====================================================================
+# Batch configuration reproducing Table 2 of the paper:
+# "Attack performance under multi-target manipulations scenarios."
+#
+# Three randomly applied edits per sample, 2-second edit segments.
+#
+#   python run_table.py --config configs/tables/table2_multi.yaml
+# =====================================================================
+name: table2_multi
+mode: multi
+attack_types: [mirage, mute]
+
+models: [crnn, atst_sed]
+methods: [cw, faag, aro, m2a]
+
+# Multi-target settings matching the original arbitrary_attack.py main()
+# blocks: 2-second edit segments, 50 samples; the number of simultaneous
+# edits was model-specific (8 for CRNN, 5 for ATST-SED).
+overrides:
+  delta_duration: 2.0
+  num_samples: 50
+
+model_overrides:
+  crnn:
+    edit_num: 8
+  atst_sed:
+    edit_num: 5
+
+method_overrides:
+  aro:
+    aro_beta: 1.0
+
+cell_overrides:
+  crnn:
+    aro:
+      aro_ref_wav: ../TUT-sound-events-2017-development/audio/street/a001.wav
+  atst_sed:
+    aro:
+      aro_ref_wav: "../DESED_dataset/strong_label_real (3373)/Y--9N94_tQu4_30.000_40.000_16k.wav"
+
+results_dir: ../../results/table2_multi
+
+execution:
+  jobs: 1
+  # gpus: [0, 1]
+
+# python:
+#   crnn: /path/to/crnn-env/bin/python
+#   atst_sed: /path/to/atst-env/bin/python

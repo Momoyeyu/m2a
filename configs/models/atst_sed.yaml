@@ -1,0 +1,49 @@
+# =====================================================================
+# ATST-SED victim model -- DESED dataset
+#
+# Mirrors the parameter block of the original ATST-SED/attack.py main().
+# All relative paths resolve against `base_dir` (the ATST-SED folder),
+# exactly like running the original script from inside `ATST-SED/`.
+# =====================================================================
+model: atst_sed
+base_dir: ../../ATST-SED
+
+# ----- experiment ----------------------------------------------------
+mode: single                 # single | multi
+attack_type: mirage          # mirage | mute
+method: m2a                  # m2a | cw | faag | aro | custom
+target_label: null           # null -> random class per sample
+edit_num: 3                  # number of simultaneous edits (mode=multi)
+
+# ----- data -----------------------------------------------------------
+wav_dir: "../DESED_dataset/strong_label_real (3373)/"
+num_samples: 500             # wav clips drawn (with repetition) from wav_dir
+
+# ----- victim model ----------------------------------------------------
+model_path: ./src/stage_2_wo_external.ckpt
+config_path: ./train/confs/stage2.yaml
+overlap_dur: 3               # sliding-window overlap (seconds)
+
+# ----- attack hyper-parameters (paper: tau=0.05, alpha=50) -------------
+tau: 0.05
+alpha: 50                    # weight of the preservation loss (m2a)
+aro_beta: 1.0                # weight of the acoustic-representation loss (aro)
+# aro_ref_wav: path/to/reference.wav   # required when method=aro
+attack_iters: 1000
+delta_duration: 3.0          # seconds per edited segment
+posterior_thresh: 0.5
+
+# ----- audio front-end --------------------------------------------------
+sample_rate: 16000
+n_fft: 2048
+hop_len: 1024
+nb_mel_bands: 128
+seq_len: 256
+num_classes: 10
+
+# ----- outputs ---------------------------------------------------------
+output_dir: AEs/
+log_dir: logs/
+results_dir: results/
+save_output: false
+seed: 42

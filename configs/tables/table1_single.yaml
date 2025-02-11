@@ -1,0 +1,44 @@
+# =====================================================================
+# Batch configuration reproducing Table 1 of the paper:
+# "Attack performance under single-target manipulation scenarios."
+#
+# Rows = attack methods, columns = models x [EP, ASR, UER, SNR].
+# Each cell reports the mean of the mirage and mute runs.
+#
+#   python run_table.py --config configs/tables/table1_single.yaml
+# =====================================================================
+name: table1_single
+mode: single
+attack_types: [mirage, mute]
+
+models: [crnn, atst_sed]     # resolved via configs/models/<name>.yaml
+methods: [cw, faag, aro, m2a]
+
+# Per-method overrides.  The ARO baseline needs a reference audio holding
+# other events (the acoustic-representation loss target) per model.
+method_overrides:
+  aro:
+    aro_beta: 1.0
+
+# Per-(model, method) overrides -- set the ARO reference clip here.
+cell_overrides:
+  crnn:
+    aro:
+      aro_ref_wav: ../TUT-sound-events-2017-development/audio/street/a001.wav
+  atst_sed:
+    aro:
+      aro_ref_wav: "../DESED_dataset/strong_label_real (3373)/Y--9N94_tQu4_30.000_40.000_16k.wav"
+
+# Where cell results / logs / the aggregated table land.
+results_dir: ../../results/table1_single
+
+# Parallelism: cells run as subprocesses; `gpus` assigns
+# CUDA_VISIBLE_DEVICES round-robin.  Increase `jobs` if VRAM allows.
+execution:
+  jobs: 1
+  # gpus: [0, 1]
+
+# Optional: different interpreters per model (e.g. two conda envs).
+# python:
+#   crnn: /path/to/crnn-env/bin/python
+#   atst_sed: /path/to/atst-env/bin/python

@@ -1,0 +1,57 @@
+# =====================================================================
+# CRNN (SEDnet) victim model -- DCASE2017 / TUT-sound-events-2017
+#
+# Mirrors the parameter block of the original sed-crnn/attack.py main().
+# All relative paths resolve against `base_dir` (the sed-crnn folder),
+# exactly like running the original script from inside `sed-crnn/`.
+# =====================================================================
+model: crnn
+base_dir: ../../sed-crnn
+
+# ----- experiment ----------------------------------------------------
+mode: single                 # single | multi
+attack_type: mirage          # mirage | mute
+method: m2a                  # m2a | cw | faag | aro | custom
+target_label: null           # null -> random class per sample
+edit_num: 3                  # number of simultaneous edits (mode=multi)
+
+# ----- data -----------------------------------------------------------
+wav_dir: ../TUT-sound-events-2017-development/audio/street
+num_samples: 50              # wav clips drawn (with repetition) from wav_dir
+
+# ----- victim model ----------------------------------------------------
+model_path:
+  - models/clean_mon_2024_12_18_20_59_30_fold_1_model.pth
+  - models/clean_mon_2024_12_18_20_59_30_fold_2_model.pth
+  - models/clean_mon_2024_12_18_20_59_30_fold_3_model.pth
+  - models/clean_mon_2024_12_18_20_59_30_fold_4_model.pth
+
+# ----- attack hyper-parameters (paper: tau=0.02, alpha=10) -------------
+tau: 0.02
+alpha: 10                    # weight of the preservation loss (m2a)
+aro_beta: 1.0                # weight of the acoustic-representation loss (aro)
+# aro_ref_wav: path/to/reference.wav   # required when method=aro
+attack_iters: 1000
+delta_duration: 3.0          # seconds per edited segment
+posterior_thresh: 0.5
+
+# ----- audio front-end (must match CRNN training) -----------------------
+sample_rate: 44100
+n_fft: 2048
+hop_len: 1024
+nb_mel_bands: 40
+seq_len: 256
+nb_ch: 1
+num_classes: 6
+cnn_nb_filt: 128
+cnn_pool_size: [1, 1, 1]
+rnn_nb: [32, 32]
+fc_nb: [32]
+dropout_rate: 0.5
+
+# ----- outputs ---------------------------------------------------------
+output_dir: AEs/
+log_dir: logs/
+results_dir: results/
+save_output: false
+seed: 42
